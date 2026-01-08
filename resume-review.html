@@ -56,7 +56,7 @@
       <section class="pricing" aria-labelledby="pricing-heading">
         <h3 id="pricing-heading" class="sr-only">Pricing Options</h3>
         <div class="grid pricing">
-          <article class="card">
+          <article class="card" data-plan="basic"> <!-- Added data attribute for JS targeting -->
             <h4>Basic Review</h4>
             <p class="price">₹999</p>
             <ul>
@@ -64,11 +64,11 @@
               <li>Role alignment feedback</li>
               <li>Written improvement notes</li>
             </ul>
-            <button class="btn primary" type="button" aria-describedby="basic-desc">Select</button>
+            <button class="btn primary select-btn" type="button" aria-describedby="basic-desc">Select</button> <!-- Added class and type for JS -->
             <div id="basic-desc" class="sr-only">Selects the Basic Review plan for ATS check and feedback.</div>
           </article>
 
-          <article class="card highlight">
+          <article class="card highlight" data-plan="advanced"> <!-- Added data attribute for JS targeting -->
             <h4>Advanced Review</h4>
             <p class="price">₹1999</p>
             <ul>
@@ -77,7 +77,7 @@
               <li>Recruiter evaluation logic</li>
               <li>Interview readiness score</li>
             </ul>
-            <button class="btn primary" type="button" aria-describedby="advanced-desc">Select</button>
+            <button class="btn primary select-btn" type="button" aria-describedby="advanced-desc">Select</button> <!-- Added class and type for JS -->
             <div id="advanced-desc" class="sr-only">Selects the Advanced Review plan for full optimization and scoring.</div>
           </article>
         </div>
@@ -85,7 +85,7 @@
 
       <!-- Form section -->
       <section aria-labelledby="form-heading">
-        <form class="form" action="#" method="post" enctype="multipart/form-data" novalidate>
+        <form class="form" id="resume-form" action="#" method="post" enctype="multipart/form-data" novalidate> <!-- Added id for JS targeting -->
           <h3 id="form-heading">Submit Your Resume</h3>
 
           <fieldset>
@@ -126,10 +126,53 @@
             <p>Stripe / Razorpay button will go here</p>
           </div>
 
-          <button class="btn primary" type="submit">Proceed to Payment</button>
+          <button class="btn primary" id="proceed-btn" type="submit">Proceed to Payment</button> <!-- Added id for JS -->
         </form>
       </section>
     </div>
   </main>
+
+  <!-- JavaScript for functionality (added at the end for performance) -->
+  <script>
+    // Variables to track selected plan
+    let selectedPlan = null;
+
+    // Function to handle plan selection
+    function selectPlan(plan) {
+      // Remove 'selected' class from all cards
+      document.querySelectorAll('.card').forEach(card => card.classList.remove('selected'));
+      // Add 'selected' class to the chosen card
+      document.querySelector(`[data-plan="${plan}"]`).classList.add('selected');
+      selectedPlan = plan;
+      // Update button text to indicate selection
+      document.querySelector(`[data-plan="${plan}"] .select-btn`).textContent = 'Selected';
+    }
+
+    // Add event listeners to Select buttons
+    document.querySelectorAll('.select-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const plan = e.target.closest('.card').dataset.plan;
+        selectPlan(plan);
+      });
+    });
+
+    // Handle form submission (Proceed to Payment)
+    document.getElementById('proceed-btn').addEventListener('click', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      if (!selectedPlan) {
+        alert('Please select a plan (Basic or Advanced) before proceeding.');
+        return;
+      }
+      // Basic form validation
+      const form = document.getElementById('resume-form');
+      if (!form.checkValidity()) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      // Simulate payment (replace with real integration)
+      alert(`Proceeding to payment for ${selectedPlan === 'basic' ? 'Basic Review (₹999)' : 'Advanced Review (₹1999)'}. In a real site, this would redirect to Stripe/Razorpay.`);
+      // Example: window.location.href = 'https://stripe.com/payment-link'; // Uncomment and replace for real integration
+    });
+  </script>
 </body>
 </html>
