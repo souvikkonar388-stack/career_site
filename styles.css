@@ -282,6 +282,10 @@ nav a:focus {
   border: 0;
 }
 
+.card.selected {
+  border: 3px solid #111; /* Or any highlight style */
+  background: #f0f0f0; /* Light background for emphasis */
+}
 .error {
   color: #d9534f; /* Bootstrap-like error color */
   font-size: 12px;
