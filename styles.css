@@ -291,3 +291,8 @@ nav a:focus {
   font-size: 12px;
   margin-top: 5px;
 }
+
+.card.selected {
+  border: 3px solid #111;
+  background: #f0f0f0;
+}
