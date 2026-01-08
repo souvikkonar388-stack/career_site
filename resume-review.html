@@ -8,40 +8,11 @@
   <meta name="author" content="ResumeDecoded">
   <title>Resume Review | ResumeDecoded</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Preload critical resources for performance -->
-  <link rel="preload" href="styles.css" as="style">
-  <!-- Structured data for SEO -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "Professional Resume Review",
-    "provider": {
-      "@type": "Organization",
-      "name": "ResumeDecoded"
-    },
-    "description": "ATS-optimized resume reviews with recruiter logic and clear feedback.",
-    "offers": [
-      {
-        "@type": "Offer",
-        "name": "Basic Review",
-        "price": "999",
-        "priceCurrency": "INR"
-      },
-      {
-        "@type": "Offer",
-        "name": "Advanced Review",
-        "price": "1999",
-        "priceCurrency": "INR"
-      }
-    ]
-  }
-  </script>
-  <!-- Razorpay Checkout Script (added for payment integration) -->
+  <!-- Razorpay Checkout Script -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-  <!-- Header with navigation -->
+  <!-- Header -->
   <header class="navbar" role="banner">
     <div class="container nav-flex">
       <h1 class="logo">ResumeDecoded</h1>
@@ -58,7 +29,7 @@
       <section class="pricing" aria-labelledby="pricing-heading">
         <h3 id="pricing-heading" class="sr-only">Pricing Options</h3>
         <div class="grid pricing">
-          <article class="card" data-plan="basic" data-amount="99900"> <!-- Added data-amount for JS (in paisa) -->
+          <article class="card" data-plan="basic" data-amount="99900">
             <h4>Basic Review</h4>
             <p class="price">₹999</p>
             <ul>
@@ -67,10 +38,10 @@
               <li>Written improvement notes</li>
             </ul>
             <button class="btn primary select-btn" type="button" aria-describedby="basic-desc">Select</button>
-            <div id="basic-desc" class="sr-only">Selects the Basic Review plan for ATS check and feedback.</div>
+            <div id="basic-desc" class="sr-only">Selects the Basic Review plan.</div>
           </article>
 
-          <article class="card highlight" data-plan="advanced" data-amount="199900"> <!-- Added data-amount for JS (in paisa) -->
+          <article class="card highlight" data-plan="advanced" data-amount="199900">
             <h4>Advanced Review</h4>
             <p class="price">₹1999</p>
             <ul>
@@ -80,7 +51,7 @@
               <li>Interview readiness score</li>
             </ul>
             <button class="btn primary select-btn" type="button" aria-describedby="advanced-desc">Select</button>
-            <div id="advanced-desc" class="sr-only">Selects the Advanced Review plan for full optimization and scoring.</div>
+            <div id="advanced-desc" class="sr-only">Selects the Advanced Review plan.</div>
           </article>
         </div>
       </section>
@@ -125,7 +96,7 @@
           <!-- Payment placeholder -->
           <div class="payment-box" role="region" aria-labelledby="payment-heading">
             <h4 id="payment-heading">Payment Step</h4>
-            <p>Razorpay integration active</p> <!-- Updated text -->
+            <p>Razorpay integration active</p>
           </div>
 
           <button class="btn primary" id="proceed-btn" type="submit">Proceed to Payment</button>
@@ -134,12 +105,11 @@
     </div>
   </main>
 
-  <!-- JavaScript for functionality -->
+  <!-- JavaScript -->
   <script>
     let selectedPlan = null;
     let selectedAmount = null;
 
-    // Function to handle plan selection
     function selectPlan(plan, amount) {
       document.querySelectorAll('.card').forEach(card => card.classList.remove('selected'));
       document.querySelector(`[data-plan="${plan}"]`).classList.add('selected');
@@ -148,7 +118,6 @@
       document.querySelector(`[data-plan="${plan}"] .select-btn`).textContent = 'Selected';
     }
 
-    // Add event listeners to Select buttons
     document.querySelectorAll('.select-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const card = e.target.closest('.card');
@@ -158,7 +127,6 @@
       });
     });
 
-    // Handle form submission (Proceed to Payment)
     document.getElementById('proceed-btn').addEventListener('click', async (e) => {
       e.preventDefault();
       if (!selectedPlan) {
@@ -171,18 +139,16 @@
         return;
       }
 
-      // Create order via backend
       try {
-        const response = await fetch('http://localhost:3000/create-order', { // Update to your deployed backend URL
+        const response = await fetch('https://your-backend.vercel.app/create-order', {  // Replace with your backend URL
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount: selectedAmount, plan: selectedPlan }),
         });
         const order = await response.json();
 
-        // Open Razorpay Checkout
         const options = {
-          key: 'YOUR_RAZORPAY_KEY_ID', // Replace with your Key ID
+          key: 'YOUR_RAZORPAY_KEY_ID',  // Replace with your Key ID
           amount: order.amount,
           currency: order.currency,
           name: 'ResumeDecoded',
@@ -190,8 +156,7 @@
           order_id: order.id,
           handler: function (response) {
             alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
-            // Send to backend for verification: fetch('/verify-payment', { method: 'POST', body: JSON.stringify(response) });
-            // Then, process the form data (e.g., send email or save to DB)
+            // Post-payment: Send form data to your email/DB
           },
           prefill: {
             name: document.getElementById('full-name').value,
@@ -202,7 +167,7 @@
         const rzp = new Razorpay(options);
         rzp.open();
       } catch (error) {
-        alert('Error creating order: ' + error.message);
+        alert('Error: ' + error.message);
       }
     });
   </script>
